@@ -1,0 +1,322 @@
+/* ============================================================
+   Sibusiso Mchunu - portfolio
+   Visual system: engineering drawing sheet.
+   Cool paper ground, drafting blue ink, red annotation marks.
+   ============================================================ */
+
+:root {
+  /* --- Ground --- */
+  --paper: #e4e6e3;
+  --paper-lit: #edeeeb;
+  --paper-deep: #d6d9d5;
+
+  /* --- Ink --- */
+  --ink: #14181c;
+  --ink-soft: #4c5459;
+  --ink-faint: #8b9296;
+
+  /* --- Drafting line --- */
+  --rule: #b7bcb7;
+  --rule-hair: #c6cac6;
+
+  /* --- Accents (used with restraint) --- */
+  --blue: #22467f;
+  --blue-lit: #3a67ad;
+  --blue-wash: rgba(34, 70, 127, 0.08);
+  --red: #a8372a;
+  --red-wash: rgba(168, 55, 42, 0.09);
+
+  /* --- Type --- */
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* --- Scale --- */
+  --step-hero: clamp(3rem, 9.4vw, 7rem);
+  --step-sheet: clamp(2.1rem, 5.5vw, 4rem);
+  --step-lead: clamp(1.05rem, 1.9vw, 1.35rem);
+  --step-body: 1.0625rem;
+  --step-note: 0.9375rem;
+  --step-tag: 0.75rem;
+
+  /* --- Metrics --- */
+  --gutter: clamp(1.25rem, 5vw, 5.5rem);
+  --margin-rule: clamp(2.25rem, 6vw, 6.5rem);
+  --sheet-max: 82rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  /* background-color: var(--paper); */
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--step-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+
+  /* Drawing-sheet grid, 4mm minor over 20mm major */
+  background-image: linear-gradient(var(--rule-hair) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rule-hair) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: -1px -1px;
+}
+
+body::before {
+  /* Softens the grid so it reads as paper, not as a table */
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(237, 238, 235, 0.72) 0%,
+    rgba(228, 230, 227, 0.94) 55%,
+    rgba(214, 217, 213, 0.98) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- The persistent left margin rule, as on a real drawing sheet --- */
+/* .margin-rule {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: var(--margin-rule);
+  width: 1px;
+  background: var(--rule);
+  z-index: 2;
+  pointer-events: none;
+}
+.margin-rule::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--rule-hair);
+}
+@media (max-width: 700px) {
+  .margin-rule {
+    display: none;
+  }
+} */
+
+/* ============================================================
+   Typography primitives
+   ============================================================ */
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--display);
+  font-weight: 600;
+  margin: 0;
+  line-height: 0.92;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--blue);
+  text-decoration: none;
+  border-bottom: 1px solid var(--blue-wash);
+  transition: border-color 160ms ease, color 160ms ease;
+}
+a:hover {
+  border-bottom-color: var(--blue);
+}
+
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: var(--step-tag);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* Red pencil annotation — the drawing's revision voice */
+.annotate {
+  font-family: var(--mono);
+  font-size: var(--step-tag);
+  letter-spacing: 0.06em;
+  color: var(--red);
+  text-transform: uppercase;
+}
+
+.lead {
+  font-size: var(--step-lead);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 44ch;
+}
+
+/* ============================================================
+   Sheet layout
+   ============================================================ */
+
+.sheet {
+  position: relative;
+  padding: clamp(4.5rem, 9vw, 8.5rem) var(--gutter) clamp(4.5rem, 9vw, 8rem);
+  padding-left: calc(var(--margin-rule) + var(--gutter));
+  border-top: 1px solid var(--rule);
+}
+@media (max-width: 700px) {
+  .sheet {
+    padding-left: var(--gutter);
+  }
+}
+
+.sheet__inner {
+  max-width: var(--sheet-max);
+  margin: 0 auto;
+}
+
+/* Sheet header: number + title + count, all carrying real information */
+.sheet__head {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(0.75rem, 2vw, 1.75rem);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: clamp(2rem, 4vw, 3.25rem);
+  flex-wrap: wrap;
+}
+
+.sheet__no {
+  font-family: var(--mono);
+  font-size: var(--step-tag);
+  letter-spacing: 0.12em;
+  color: var(--blue);
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--blue);
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.sheet__title {
+  font-size: var(--step-sheet);
+  letter-spacing: 0.005em;
+}
+
+.sheet__count {
+  font-family: var(--mono);
+  font-size: var(--step-tag);
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  margin-left: auto;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   Scroll reveal
+   ============================================================ */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Shared components
+   ============================================================ */
+
+.chip {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: var(--paper-lit);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 0.3rem 0.5rem;
+  white-space: nowrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--mono);
+  font-size: var(--step-tag);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.85rem 1.35rem;
+  border-radius: 50px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper-lit);
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+.btn:hover {
+  background: var(--blue);
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule);
+}
+.btn--ghost:hover {
+  background: transparent;
+  color: var(--blue);
+  border-color: var(--blue);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
